@@ -1,0 +1,7 @@
+<%- include('../partials/header') %>
+<h1>Welcome to Your Dashboard</h1>
+<p>Hello, <%= user.name %>!</p>
+<p>Your email: <%= user.email %></p>
+<a href="/generate-invoice" class="button">Generate New Invoice</a>
+<a href="/api/invoice/list" class="button">View My Invoices</a>
+<%- include('../partials/footer') %>

@@ -1,0 +1,45 @@
+<%- include('../partials/header') %>
+<h1>Invoice</h1>
+<div class="invoice-details">
+    <p><strong>Invoice No:</strong> <%= invoice.invoiceNo %></p>
+    <p><strong>Date:</strong> <%= invoice.date.toLocaleDateString() %></p>
+    <p><strong>Order No:</strong> <%= invoice.orderNo %></p>
+</div>
+
+<h2>Customer Details</h2>
+<div class="customer-details">
+    <p><strong>Name:</strong> <%= invoice.customerDetails.name %></p>
+    <p><strong>Address:</strong> <%= invoice.customerDetails.address %></p>
+    <p><strong>GST No:</strong> <%= invoice.customerDetails.gstNo %></p>
+    <p><strong>Phone No:</strong> <%= invoice.customerDetails.phoneNo %></p>
+    <p><strong>Email:</strong> <%= invoice.customerDetails.email %></p>
+</div>
+
+<h2>Products</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% invoice.products.forEach(product => { %>
+            <tr>
+                <td><%= product.description %></td>
+                <td><%= product.quantity %></td>
+                <td><%= product.price.toFixed(2) %></td>
+                <td><%= product.total.toFixed(2) %></td>
+            </tr>
+        <% }); %>
+    </tbody>
+</table>
+
+<div class="total-amount">
+    <p><strong>Total Amount:</strong> <%= invoice.totalAmount.toFixed(2) %></p>
+</div>
+
+<button onclick="window.print()">Print Invoice</button>
+<%- include('../partials/footer') %>

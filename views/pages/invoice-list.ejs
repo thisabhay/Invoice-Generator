@@ -1,0 +1,25 @@
+<%- include('../partials/header') %>
+<h1>My Invoices</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Invoice No</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Total Amount</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% invoices.forEach(invoice => { %>
+            <tr>
+                <td><%= invoice.invoiceNo %></td>
+                <td><%= invoice.date.toLocaleDateString() %></td>
+                <td><%= invoice.customerDetails.name %></td>
+                <td><%= invoice.totalAmount.toFixed(2) %></td>
+                <td><a href="/api/invoice/<%= invoice._id %>">View</a></td>
+            </tr>
+        <% }); %>
+    </tbody>
+</table>
+<%- include('../partials/footer') %>

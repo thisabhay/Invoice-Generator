@@ -1,0 +1,38 @@
+<%- include('../partials/header') %>
+<h1>Register</h1>
+<form action="/api/auth/register" method="POST">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <div>
+        <label for="gstNo">GST No:</label>
+        <input type="text" id="gstNo" name="gstNo" required>
+    </div>
+    <div>
+        <label for="phoneNo">Phone No:</label>
+        <input type="tel" id="phoneNo" name="phoneNo" required>
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div>
+        <label for="addressLine1">Address Line 1:</label>
+        <input type="text" id="addressLine1" name="addressLine1" required>
+    </div>
+    <div>
+        <label for="addressLine2">Address Line 2:</label>
+        <input type="text" id="addressLine2" name="addressLine2">
+    </div>
+    <div>
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state" required>
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit">Register</button>
+</form>
+<%- include('../partials/footer') %>

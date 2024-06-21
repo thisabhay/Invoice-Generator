@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <% if (locals.user) { %>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/generate-invoice">Generate Invoice</a></li>
+                    <li><a href="/api/invoice/list">My Invoices</a></li>
+                    <li><a href="/api/auth/logout">Logout</a></li>
+                <% } else { %>
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Register</a></li>
+                <% } %>
+            </ul>
+        </nav>
+    </header>
+    <main>
