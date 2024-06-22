@@ -1,14 +1,40 @@
-<%- include('../partials/header') %>
-<h1>Login</h1>
-<form action="/api/auth/login" method="POST">
-    <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-    </div>
-    <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-    </div>
-    <button type="submit">Login</button>
-</form>
-<%- include('../partials/footer') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Glacial+Indifference&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+    <section class="login">
+        <div class="sec1">
+            <div class="logo">
+                <img src="./assets/quicklybill2.png" alt="logo">
+            </div>
+            <div class="illustration">
+               <img src="./assets/Printing invoices-pana.png" alt="image">
+            </div>
+        </div>
+        <div class="sec2">
+            <a href="/" class="back-button">< Back</a>
+            <h2>Account Login</h2>
+            <p>If you are already a member you can login with your email address and password.</p>
+            <form action="/api/auth/login" method="POST">
+                <div>
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Login Account</button>
+            </form>
+            <p class="signup-link">Don't have an account? <a href="/register">Sign up here</a></p>
+        </div>
+    </section>
+</body>
+</html>
