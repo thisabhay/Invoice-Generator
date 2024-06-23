@@ -1,45 +1,142 @@
 <%- include('../partials/header') %>
-<h1>Invoice</h1>
-<div class="invoice-details">
-    <p><strong>Invoice No:</strong> <%= invoice.invoiceNo %></p>
-    <p><strong>Date:</strong> <%= invoice.date.toLocaleDateString() %></p>
-    <p><strong>Order No:</strong> <%= invoice.orderNo %></p>
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: #f0f0f0;
+    }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .header h1 {
+        font-size: 36px;
+        margin-bottom: 5px;
+    }
+    .header .invoice-details {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+    .header .invoice-details div {
+        text-align: left;
+    }
+    .header .invoice-details div p {
+        margin: 5px 0;
+    }
+    .customer-details {
+        background-color: #FFB61D;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    .customer-details p {
+        margin: 5px 0;
+    }
+    .products {
+        margin-bottom: 20px;
+    }
+    .products table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .products table, .products th, .products td {
+        border: 1px solid #ddd;
+    }
+    .products th, .products td {
+        padding: 8px;
+        text-align: left;
+    }
+    .products th {
+        background-color: #f4f4f4;
+    }
+    .total-amount {
+        text-align: right;
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .print-button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #FFB61D;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+</style>
+
+<div class="container">
+    <div class="header">
+        <h1>INVOICE</h1>
+        <div class="invoice-details">
+            <div>
+                <p><strong>Invoice No:</strong> <%= invoice.invoiceNo %></p>
+                <p><strong>Date:</strong> <%= new Date(invoice.date).toDateString() %></p>
+                <p><strong>Order No:</strong> <%= invoice.orderNo %></p>
+            </div>
+            <div>
+                <p><strong><%= user.name %></strong></p>
+                <p><%= user.addressLine1 %></p>
+                <p><%= user.addressLine2 %></p>
+                <p><%= user.state %></p>
+                
+                <p><strong>GST:</strong>: <%= user.gstNo %></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="customer-details">
+        <p><strong>Customer Details</strong></p>
+        <p><strong><%= invoice.customerDetails.name %></strong></p>
+        <p><%= invoice.customerDetails.address %></p>
+        <p><strong>GST:</strong> <%= invoice.customerDetails.gstNo %></p>
+        <p><strong>Phone No:</strong> <%= invoice.customerDetails.phoneNo %></p>
+        <p><strong>Email:</strong> <%= invoice.customerDetails.email %></p>
+        
+    </div>
+
+    <div class="products">
+        <h2>Products</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% invoice.products.forEach(product => { %>
+                    <tr>
+                        <td><%= product.description %></td>
+                        <td><%= product.quantity %></td>
+                        <td>₹<%= parseFloat(product.price).toFixed(2) %></td>
+                        <td>₹<%= (parseFloat(product.quantity) * parseFloat(product.price)).toFixed(2) %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="total-amount">
+        <p><strong>Subtotal:</strong> ₹<%= parseFloat(invoice.subtotal).toFixed(2) %></p>
+        <p><strong>Tax Rate:</strong> <%= invoice.taxRate %>%</p>
+        <p><strong>Tax Amount:</strong> ₹<%= parseFloat(invoice.taxAmount).toFixed(2) %></p>
+        <p><strong>Total Amount:</strong> ₹<%= parseFloat(invoice.totalAmount).toFixed(2) %></p>
+    </div>
+
+    <button class="print-button" onclick="window.print()">Print Invoice</button>
 </div>
 
-<h2>Customer Details</h2>
-<div class="customer-details">
-    <p><strong>Name:</strong> <%= invoice.customerDetails.name %></p>
-    <p><strong>Address:</strong> <%= invoice.customerDetails.address %></p>
-    <p><strong>GST No:</strong> <%= invoice.customerDetails.gstNo %></p>
-    <p><strong>Phone No:</strong> <%= invoice.customerDetails.phoneNo %></p>
-    <p><strong>Email:</strong> <%= invoice.customerDetails.email %></p>
-</div>
-
-<h2>Products</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Description</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% invoice.products.forEach(product => { %>
-            <tr>
-                <td><%= product.description %></td>
-                <td><%= product.quantity %></td>
-                <td><%= product.price.toFixed(2) %></td>
-                <td><%= product.total.toFixed(2) %></td>
-            </tr>
-        <% }); %>
-    </tbody>
-</table>
-
-<div class="total-amount">
-    <p><strong>Total Amount:</strong> <%= invoice.totalAmount.toFixed(2) %></p>
-</div>
-
-<button onclick="window.print()">Print Invoice</button>
 <%- include('../partials/footer') %>

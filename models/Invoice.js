@@ -18,7 +18,11 @@ const InvoiceSchema = new mongoose.Schema({
         price: Number,
         total: Number
     }],
-    totalAmount: Number
+    subtotal: { type: Number, default: 0 },
+    taxRate: { type: Number, default: 0 },
+    taxAmount: { type: Number, default: 0 },
+    totalAmount: { type: Number, default: 0 }
 });
 
 module.exports = mongoose.model('Invoice', InvoiceSchema);
+

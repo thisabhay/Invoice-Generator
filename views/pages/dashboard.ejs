@@ -1,7 +1,20 @@
 <%- include('../partials/header') %>
-<h1>Welcome to Your Dashboard</h1>
-<p>Hello, <%= user.name %>!</p>
-<p>Your email: <%= user.email %></p>
-<a href="/generate-invoice" class="button">Generate New Invoice</a>
-<a href="/api/invoice/list" class="button">View My Invoices</a>
+
+<div class="dashboard-container">
+  <h1 class="dashboard-title">Welcome to Your Dashboard</h1>
+  
+  <div class="user-info">
+    <h2>User Information</h2>
+    <p><strong>Name:</strong> <%= user.name %></p>
+    <p><strong>Email:</strong> <%= user.email %></p>
+    <p><strong>GST:</strong> <%= user.gstNo %></p>
+    <p><strong>Address:</strong> <%= user.addressLine1 %></p>
+  </div>
+  
+  <div class="action-buttons">
+    <a href="/generate-invoice" class="button primary-button">Generate New Invoice</a>
+    <a href="/api/invoice/list" class="button secondary-button">View My Invoices</a>
+  </div>
+</div>
+
 <%- include('../partials/footer') %>

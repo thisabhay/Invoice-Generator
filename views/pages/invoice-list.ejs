@@ -1,25 +1,34 @@
 <%- include('../partials/header') %>
-<h1>My Invoices</h1>
-<table>
-    <thead>
+
+<div class="invoice-list-container">
+  <h1 class="invoice-list-title">My Invoices</h1>
+  
+  <div class="table-responsive">
+    <table class="invoice-table">
+      <thead>
         <tr>
-            <th>Invoice No</th>
-            <th>Date</th>
-            <th>Customer</th>
-            <th>Total Amount</th>
-            <th>Action</th>
+          <th>Invoice No</th>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Total Amount</th>
+          <th>Action</th>
         </tr>
-    </thead>
-    <tbody>
+      </thead>
+      <tbody>
         <% invoices.forEach(invoice => { %>
-            <tr>
-                <td><%= invoice.invoiceNo %></td>
-                <td><%= invoice.date.toLocaleDateString() %></td>
-                <td><%= invoice.customerDetails.name %></td>
-                <td><%= invoice.totalAmount.toFixed(2) %></td>
-                <td><a href="/api/invoice/<%= invoice._id %>">View</a></td>
-            </tr>
+          <tr>
+            <td data-label="Invoice No"><%= invoice.invoiceNo %></td>
+            <td data-label="Date"><%= invoice.date.toLocaleDateString() %></td>
+            <td data-label="Customer"><%= invoice.customerDetails.name %></td>
+            <td data-label="Total Amount">₹<%= invoice.totalAmount.toFixed(2) %></td>
+            <td data-label="Action">
+              <a href="/api/invoice/<%= invoice._id %>" class="view-button">View</a>
+            </td>
+          </tr>
         <% }); %>
-    </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <%- include('../partials/footer') %>
