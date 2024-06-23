@@ -1,19 +1,13 @@
-import dotenv from 'dotenv';
-import express from 'express';
-import mongoose from 'mongoose';
-import cookieParser from 'cookie-parser';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import connectDB from './config/db.js';
-import authRoutes from './routes/auth.js';
-import invoiceRoutes from './routes/invoice.js';
-import auth from './middleware/auth.js';
-import User from './models/User.js';
-
-dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
+const path = require('path');
+const connectDB = require('./config/db');
+const authRoutes = require('./routes/auth');
+const invoiceRoutes = require('./routes/invoice');
+const auth = require('./middleware/auth');
+const User = require('./models/User');
 
 const app = express();
 
