@@ -11,11 +11,10 @@ const User = require('./models/User');
 
 const app = express();
 
-// Connect Database
 connectDB();
 
-// Middleware
-app.use(express.json({ extended: false }));
+
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static('public'));
@@ -37,6 +36,9 @@ app.get('/generate-invoice', auth, (req, res) => res.render('pages/generate-invo
 app.get('/dashboard', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
+        if (!user) {
+            return res.status(404).render('pages/error', { error: 'User not found' });
+        }
         res.render('pages/dashboard', { user });
     } catch (err) {
         console.error(err.message);
