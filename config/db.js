@@ -1,12 +1,13 @@
-const { MongoClient } = require('mongodb');
-
-let db;
+const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
-        const client = new MongoClient(process.env.MONGODB_URI);
-        await client.connect();
-        db = client.db(); // Get the default database
+        await mongoose.connect(process.env.MONGODB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useCreateIndex: true,
+            useFindAndModify: false
+        });
         console.log('MongoDB Connected...');
     } catch (err) {
         console.error('Error connecting to MongoDB:', err.message);
@@ -14,11 +15,4 @@ const connectDB = async () => {
     }
 };
 
-const getDB = () => {
-    if (!db) {
-        throw new Error('Database not initialized. Call connectDB first.');
-    }
-    return db;
-};
-
-module.exports = { connectDB, getDB };
+module.exports = { connectDB };
