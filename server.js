@@ -40,11 +40,13 @@ app.get('/dashboard', auth, async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 3000;
-
+// Connect to the database
 connectDB().then(() => {
-    app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+    console.log('Connected to the database');
 }).catch(err => {
     console.error('Failed to connect to the database:', err);
     process.exit(1);
 });
+
+// Export the Express app
+module.exports = app;
