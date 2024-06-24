@@ -1,27 +1,42 @@
-const mongoose = require('mongoose');
+const { getDB } = require('../config/db');
+const { ObjectId } = require('mongodb');
 
-const InvoiceSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+const invoiceSchema = {
+    userId: ObjectId,
     invoiceNo: String,
     date: Date,
     orderNo: String,
     customerDetails: {
         name: String,
         address: String,
-        gstNo: String,
-        phoneNo: String,
+        phone: String,
         email: String
     },
-    products: [{
-        description: String,
-        quantity: Number,
-        price: Number,
-        total: Number
-    }],
-    subtotal: { type: Number, default: 0 },
-    taxRate: { type: Number, default: 0 },
-    taxAmount: { type: Number, default: 0 },
-    totalAmount: { type: Number, default: 0 }
-});
+    products: [
+        {
+            name: String,
+            quantity: Number,
+            price: Number
+        }
+    ],
+    subtotal: Number,
+    taxRate: Number,
+    taxAmount: Number,
+    totalAmount: Number
+};
 
-module.exports = mongoose.model('Invoice', InvoiceSchema);
+const createInvoice = async (invoiceData) => {
+    const db = getDB();
+    const result = await db.collection('invoices').insertOne(invoiceData);
+    return result.insertedId;
+};
+
+const findInvoicesByUserId = async (userId) => {
+    const db = getDB();
+    return await db.collection('invoices').find({ userId: new ObjectId(userId) }).sort({ date: -1 }).toArray();
+};
+
+module.exports = {
+    createInvoice,
+    findInvoicesByUserId
+};

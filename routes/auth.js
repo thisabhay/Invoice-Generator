@@ -1,65 +1,71 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { registrationSchema, loginSchema } = require('../validators/authValidators');
-const User = require('../models/User');
+const { findUserByEmail, createUser, userSchema } = require('../models/User');
+const { z } = require('zod');
 
 const router = express.Router();
 
-router.post('/register', async (req, res, next) => {
+const loginSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(6)
+});
+
+router.post('/register', async (req, res) => {
     try {
-        const validatedData = registrationSchema.parse(req.body);
-        let user = await User.findOne({ email: validatedData.email });
+        const validation = userSchema.safeParse(req.body);
+        if (!validation.success) {
+            return res.status(400).render('pages/error', { error: validation.error.errors[0].message });
+        }
+
+        let user = await findUserByEmail(req.body.email);
         if (user) {
             return res.status(400).render('pages/error', { error: 'User already exists' });
         }
 
-        user = new User(validatedData);
-        await user.save();
+        const userId = await createUser(req.body);
 
-        const payload = {
-            user: {
-                id: user.id
-            }
-        };
+        const payload = { user: { id: userId.toString() } };
 
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
             if (err) throw err;
             res.cookie('token', token, { httpOnly: true });
             res.redirect('/dashboard');
         });
     } catch (err) {
-        next(err);
+        console.error(err.message);
+        res.status(500).render('pages/error', { error: 'Server error during registration' });
     }
 });
 
-router.post('/login', async (req, res, next) => {
+router.post('/login', async (req, res) => {
     try {
-        const validatedData = loginSchema.parse(req.body);
-        const { email, password } = validatedData;
+        const validation = loginSchema.safeParse(req.body);
+        if (!validation.success) {
+            return res.status(400).render('pages/error', { error: validation.error.errors[0].message });
+        }
 
-        let user = await User.findOne({ email });
+        const { email, password } = req.body;
+        let user = await findUserByEmail(email);
         if (!user) {
             return res.status(400).render('pages/error', { error: 'Invalid Credentials' });
         }
 
-        const isMatch = await user.comparePassword(password);
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).render('pages/error', { error: 'Invalid Credentials' });
         }
 
-        const payload = {
-            user: {
-                id: user.id
-            }
-        };
+        const payload = { user: { id: user._id.toString() } };
 
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
             if (err) throw err;
             res.cookie('token', token, { httpOnly: true });
             res.redirect('/dashboard');
         });
     } catch (err) {
-        next(err);
+        console.error(err.message);
+        res.status(500).render('pages/error', { error: 'Server error during login' });
     }
 });
 

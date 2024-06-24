@@ -3,47 +3,50 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const Invoice = require('../models/Invoice');
 const User = require('../models/User');
-const { invoiceSchema } = require('../validators/invoiceValidators');
 
-router.post('/generate', auth, async (req, res, next) => {
+router.post('/generate', auth, async (req, res) => {
     try {
-        const validatedData = invoiceSchema.parse(req.body);
+        const { invoiceNo, date, orderNo, customerDetails, products, taxRate } = req.body;
+
+        const subtotal = products.reduce((sum, product) => sum + (parseFloat(product.quantity) * parseFloat(product.price)), 0);
+        const taxRateValue = parseFloat(taxRate) || 0;
+        const taxAmount = subtotal * (taxRateValue / 100);
+        const totalAmount = subtotal + taxAmount;
+
         const invoice = new Invoice({
             userId: req.user.id,
-            ...validatedData
+            invoiceNo,
+            date,
+            orderNo,
+            customerDetails,
+            products,
+            subtotal,
+            taxRate: taxRateValue,
+            taxAmount,
+            totalAmount
         });
 
         await invoice.save();
-        
+
         const user = await User.findById(req.user.id).select('-password');
 
         res.render('pages/invoice', { invoice, user });
     } catch (err) {
-        next(err);
+        console.error(err.message);
+        res.status(500).render('pages/error', { error: 'Error generating invoice' });
     }
 });
 
-router.get('/list', auth, async (req, res, next) => {
+router.get('/list', auth, async (req, res) => {
     try {
-        const invoices = await Invoice.find({ userId: req.user.id }).sort({ date: -1 }).limit(10);
+        const invoices = await Invoice.find({
+            userId: req.user.id
+        }).sort({ date: -1 });
+
         res.render('pages/invoice-list', { invoices });
     } catch (err) {
-        next(err);
-    }
-});
-
-router.get('/view/:id', auth, async (req, res, next) => {
-    try {
-        const invoice = await Invoice.findOne({ _id: req.params.id, userId: req.user.id });
-        if (!invoice) {
-            return res.status(404).render('pages/error', { error: 'Invoice not found' });
-        }
-
-        const user = await User.findById(req.user.id).select('-password');
-
-        res.render('pages/invoice', { invoice, user });
-    } catch (err) {
-        next(err);
+        console.error(err.message);
+        res.status(500).render('pages/error', { error: 'Error fetching invoices' });
     }
 });
 
