@@ -1,22 +1,42 @@
-const mongoose = require('mongoose');
+const { getDB } = require('../config/db');
+const { ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
+const z = require('zod');
 
-const UserSchema = new mongoose.Schema({
-    name: String,
-    gstNo: String,
-    phoneNo: String,
-    email: { type: String, unique: true },
-    addressLine1: String,
-    addressLine2: String,
-    state: String,
-    password: String
+const userSchema = z.object({
+    name: z.string().min(2).max(50),
+    gstNo: z.string(),
+    phoneNo: z.string(),
+    email: z.string().email(),
+    addressLine1: z.string(),
+    addressLine2: z.string().optional(),
+    state: z.string(),
+    password: z.string().min(6),
+    date: z.date().default(() => new Date())
 });
 
-UserSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) return next();
+const findUserByEmail = async (email) => {
+    const db = getDB();
+    return await db.collection('users').findOne({ email });
+};
+
+const findUserById = async (id) => {
+    const db = getDB();
+    return await db.collection('users').findOne({ _id: new ObjectId(id) });
+};
+
+const createUser = async (userData) => {
+    const validatedData = userSchema.parse(userData);
+    const db = getDB();
     const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-});
+    validatedData.password = await bcrypt.hash(validatedData.password, salt);
+    const result = await db.collection('users').insertOne(validatedData);
+    return result.insertedId;
+};
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = {
+    findUserByEmail,
+    findUserById,
+    createUser,
+    userSchema
+};

@@ -1,34 +1,33 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
-const User = require('../models/User'); 
-const { registrationSchema, loginSchema } = require('../zod/zod'); 
+const { findUserByEmail, createUser, userSchema } = require('../models/User');
+const { z } = require('zod');
 
 const router = express.Router();
 
+const loginSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(6)
+});
+
 router.post('/register', async (req, res) => {
     try {
-        const validation = registrationSchema.safeParse(req.body);
+        const validation = userSchema.safeParse(req.body);
         if (!validation.success) {
             return res.status(400).render('pages/error', { error: validation.error.errors[0].message });
         }
 
-        const { name, gstNo, phoneNo, email, addressLine1, addressLine2, state, password } = req.body;
-
-        let user = await User.findOne({ email });
+        let user = await findUserByEmail(req.body.email);
         if (user) {
             return res.status(400).render('pages/error', { error: 'User already exists' });
         }
 
-        user = new User({
-            name, gstNo, phoneNo, email, addressLine1, addressLine2, state, password
-        });
+        const userId = await createUser(req.body);
 
-        await user.save();
         const payload = {
             user: {
-                id: user.id
+                id: userId.toString()
             }
         };
 
@@ -38,9 +37,6 @@ router.post('/register', async (req, res) => {
             res.redirect('/dashboard');
         });
     } catch (err) {
-        if (err.code === 11000) {
-            return res.status(400).render('pages/error', { error: 'Email already exists' });
-        }
         console.error(err.message);
         res.status(500).render('pages/error', { error: 'Server error during registration' });
     }
@@ -54,7 +50,7 @@ router.post('/login', async (req, res) => {
         }
 
         const { email, password } = req.body;
-        let user = await User.findOne({ email });
+        let user = await findUserByEmail(email);
         if (!user) {
             return res.status(400).render('pages/error', { error: 'Invalid Credentials' });
         }
@@ -66,7 +62,7 @@ router.post('/login', async (req, res) => {
 
         const payload = {
             user: {
-                id: user.id
+                id: user._id.toString()
             }
         };
 
