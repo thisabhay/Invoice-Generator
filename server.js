@@ -2,22 +2,24 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
-const { connectDB } = require('./config/db');
+const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const invoiceRoutes = require('./routes/invoice');
 const auth = require('./middleware/auth');
-const { findUserById } = require('./models/User');
 
 const app = express();
 
+// Middleware setup
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/invoice', invoiceRoutes);
 
@@ -28,11 +30,10 @@ app.get('/generate-invoice', auth, (req, res) => res.render('pages/generate-invo
 
 app.get('/dashboard', auth, async (req, res) => {
     try {
-        const user = await findUserById(req.user.id);
+        const user = await User.findById(req.user.id).select('-password');
         if (!user) {
             return res.status(404).render('pages/error', { error: 'User not found' });
         }
-        delete user.password;
         res.render('pages/dashboard', { user });
     } catch (err) {
         console.error(err.message);
@@ -40,13 +41,13 @@ app.get('/dashboard', auth, async (req, res) => {
     }
 });
 
+// Connect to the database
 connectDB().then(() => {
     console.log('Connected to the database');
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }).catch(err => {
     console.error('Failed to connect to the database:', err);
     process.exit(1);
 });
 
+// Export the Express app
 module.exports = app;
