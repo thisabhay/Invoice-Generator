@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const invoiceRoutes = require('./routes/invoice');
 const auth = require('./middleware/auth');
+const User = require('./models/User');
 
 const app = express();
 
@@ -41,7 +42,7 @@ app.get('/dashboard', auth, async (req, res) => {
     }
 });
 
-// Connect to the database
+// Connect to the database and start the server
 connectDB().then(() => {
     console.log('Connected to the database');
 }).catch(err => {
@@ -49,5 +50,5 @@ connectDB().then(() => {
     process.exit(1);
 });
 
-// Export the Express app
+// Export the Express app for Vercel
 module.exports = app;
