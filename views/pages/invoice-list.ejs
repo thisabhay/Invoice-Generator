@@ -1,34 +1,21 @@
-<%- include('../partials/header') %>
-
-<div class="invoice-list-container">
-  <h1 class="invoice-list-title">My Invoices</h1>
-  
-  <div class="table-responsive">
-    <table class="invoice-table">
-      <thead>
-        <tr>
-          <th>Invoice No</th>
-          <th>Date</th>
-          <th>Customer</th>
-          <th>Total Amount</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% invoices.forEach(invoice => { %>
-          <tr>
-            <td data-label="Invoice No"><%= invoice.invoiceNo %></td>
-            <td data-label="Date"><%= invoice.date.toLocaleDateString() %></td>
-            <td data-label="Customer"><%= invoice.customerDetails.name %></td>
-            <td data-label="Total Amount">₹<%= invoice.totalAmount.toFixed(2) %></td>
-            <td data-label="Action">
-              <a href="/api/invoice/<%= invoice._id %>" class="view-button">View</a>
-            </td>
-          </tr>
-        <% }); %>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<%- include('../partials/footer') %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice List</title>
+</head>
+<body>
+    <h1>Invoice List</h1>
+    <% if (invoices.length === 0) { %>
+        <p>No invoices found.</p>
+    <% } else { %>
+        <ul>
+            <% invoices.forEach(invoice => { %>
+                <li>
+                    <a href="/api/invoice/<%= invoice._id %>">Invoice <%= invoice.invoiceNo %> - <%= invoice.date.toDateString() %></a>
+                </li>
+            <% }) %>
+        </ul>
+    <% } %>
+    <a href="/dashboard">Back to Dashboard</a>
+</body>
+</html>

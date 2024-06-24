@@ -2,23 +2,25 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
-const { connectDB } = require('./config/db');
+const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const invoiceRoutes = require('./routes/invoice');
 const auth = require('./middleware/auth');
-const { findUserById } = require('./models/User');
+const User = require('./models/User');
 
 const app = express();
 
+// Middleware setup
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+// View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/invoice', invoiceRoutes);
 
@@ -29,11 +31,10 @@ app.get('/generate-invoice', auth, (req, res) => res.render('pages/generate-invo
 
 app.get('/dashboard', auth, async (req, res) => {
     try {
-        const user = await findUserById(req.user.id);
+        const user = await User.findById(req.user.id).select('-password');
         if (!user) {
             return res.status(404).render('pages/error', { error: 'User not found' });
         }
-        delete user.password; // Remove password from user object
         res.render('pages/dashboard', { user });
     } catch (err) {
         console.error(err.message);
@@ -41,7 +42,7 @@ app.get('/dashboard', auth, async (req, res) => {
     }
 });
 
-// Connect to the database
+// Connect to the database and start the server
 connectDB().then(() => {
     console.log('Connected to the database');
 }).catch(err => {
@@ -49,5 +50,5 @@ connectDB().then(() => {
     process.exit(1);
 });
 
-// Export the Express app
+// Export the Express app for Vercel
 module.exports = app;
